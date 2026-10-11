@@ -35,6 +35,8 @@ jobs:
 
   stack:
     runs-on: ubuntu-latest
+    # Runs only once T0.3 adds the compose file.
+    if: ${{ hashFiles('docker-compose.yml') != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
