@@ -9,7 +9,7 @@ def test_settings_defaults_match_compose(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.delenv("LLMP_DATABASE_URL", raising=False)
     monkeypatch.delenv("LLMP_LANGFUSE_HOST", raising=False)
     s = load_settings()
-    assert s.database_url == "postgresql://llm:llm@localhost:5432/llm_platform"
+    assert s.database_url == "postgresql://llm:llm@localhost:5433/llm_platform"
     assert s.langfuse_host == "http://localhost:3000"
 
 

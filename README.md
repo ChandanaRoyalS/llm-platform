@@ -29,7 +29,7 @@ Prerequisites: [uv](https://docs.astral.sh/uv/), Docker with Compose v2, `make`.
 ```sh
 uv sync --all-groups   # Python 3.12 environment
 make check             # ruff, ruff format --check, mypy --strict, pytest (80% coverage floor)
-make up                # Postgres 16 + pgvector on :5432, Langfuse on :3000, schema applied
+make up                # Postgres 16 + pgvector on :5433, Langfuse on :3000, schema applied
 make test-stack        # the connectivity tests against the running stack
 make down
 ```

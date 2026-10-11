@@ -32,3 +32,20 @@ jobs:
       # enforce the same number.
       - name: Tests
         run: uv run pytest
+
+  stack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: uv sync --all-groups
+      - name: make up
+        run: make up
+      - name: Stack tests
+        run: make test-stack
+      - name: make down
+        if: always()
+        run: make down

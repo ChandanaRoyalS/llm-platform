@@ -11,6 +11,7 @@ import psycopg
 @dataclass(frozen=True)
 class PostgresStatus:
     version: str
+    pgvector_available: bool
     pgvector: str | None
     tables: tuple[str, ...]
 
@@ -21,6 +22,8 @@ def check_postgres(database_url: str) -> PostgresStatus:
         cur.execute("select version()")
         row = cur.fetchone()
         version = str(row[0]) if row else ""
+        cur.execute("select 1 from pg_available_extensions where name = 'vector'")
+        available = cur.fetchone() is not None
         cur.execute("select extversion from pg_extension where extname = 'vector'")
         ext = cur.fetchone()
         pgvector = str(ext[0]) if ext else None
@@ -29,7 +32,9 @@ def check_postgres(database_url: str) -> PostgresStatus:
             "where table_schema = 'public' order by table_name"
         )
         tables = tuple(str(r[0]) for r in cur.fetchall())
-    return PostgresStatus(version=version, pgvector=pgvector, tables=tables)
+    return PostgresStatus(
+        version=version, pgvector_available=available, pgvector=pgvector, tables=tables
+    )
 
 
 def check_langfuse(host: str, client: httpx.Client | None = None) -> dict[str, object]:
