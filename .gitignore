@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+*.egg-info/
+.env
+
+# T1.1: raw inspection-report PDFs stay out of git; data/manifest.csv records where each came from.
+data/raw/
+data/pages/
+# T1.2: OCR output is regenerated from the PDFs.
+data/ocr/
+
+# Training and serving artifacts live on the HF Hub, never in git.
+train/runs/
+serve/checkpoints/
+wandb/
+
+# Terraform state is remote (S3 + DynamoDB); nothing local is authoritative.
+infra/**/.terraform/
+infra/**/*.tfstate
+infra/**/*.tfstate.backup
+infra/**/*.tfvars

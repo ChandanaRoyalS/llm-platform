@@ -1,0 +1,31 @@
+default_install_hook_types: [pre-commit, commit-msg]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      # Rule 8: no co-author lines or assistant attribution anywhere in the repo.
+      - id: no-ai-attribution
+        name: no AI attribution in commit message
+        entry: sh -c 'if grep -iqE "co-authored-by:.*(claude|anthropic)|generated with.*claude|claude-session" "$1"; then echo "AI attribution trailer in commit message"; exit 1; fi' --
+        language: system
+        stages: [commit-msg]
+      - id: mypy
+        name: mypy --strict
+        entry: uv run mypy
+        language: system
+        pass_filenames: false
+        types: [python]

@@ -1,0 +1,51 @@
+name: ci
+on:
+  push:
+    branches: [main, "week-*"]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Rule 8 of the execution plan: commits are authored solely by the owner.
+      - name: No AI attribution in history
+        run: |
+          if git log --all --format=%B | grep -iE 'co-authored-by:.*(claude|anthropic)|generated with.*claude|claude-session'; then
+            echo '::error::AI attribution trailer found in commit history'; exit 1
+          fi
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: uv sync --all-groups
+      - name: Lint
+        run: |
+          uv run ruff check src tests
+          uv run ruff format --check src tests
+      - name: Types
+        run: uv run mypy
+      # The 80% coverage floor lives in pyproject (--cov-fail-under=80), so CI and a laptop
+      # enforce the same number.
+      - name: Tests
+        run: uv run pytest
+
+  stack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: uv sync --all-groups
+      - name: make up
+        run: make up
+      - name: Stack tests
+        run: make test-stack
+      - name: make down
+        if: always()
+        run: make down
